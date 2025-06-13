@@ -1,2 +1,8 @@
+
 obj/
-test/
+libft/obj/
+.o
+.a
+ft_ls
+.DS_Store
+.git
