@@ -1,8 +1,8 @@
 
 obj/
 libft/obj/
+ft_printf/obj/
 .o
 .a
 ft_ls
 .DS_Store
-libft/.git
