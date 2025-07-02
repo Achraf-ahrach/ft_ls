@@ -8,8 +8,6 @@ void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path
     if (!*paths)
         exit(1);
 
-    *path_count = 0;
-
     while (i < argc) {
         if (argv[i][0] == '-' && argv[i][1]) {
             j = 1;
@@ -20,7 +18,7 @@ void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path
                 else if (argv[i][j] == 't') opts->t = 1;
                 else if (argv[i][j] == 'R') opts->big_r = 1;
                 else {
-                    fprintf(stderr, "ft_ls: invalid option -- '%c'\n", argv[i][j]);
+                    ft_printf("ft_ls: invalid option -- %c\n", argv[i][j]);
                     exit(1);
                 }
                 j++;

@@ -29,10 +29,10 @@ void list_directory(const char *path, t_options opts) {
     count = 0;
     while ((entry = readdir(dir))) {
         if (should_display(entry->d_name, opts))
-            entries[count++] = strdup(entry->d_name);
+            entries[count++] = ft_strdup(entry->d_name);
     }
     closedir(dir);
-
+    
     sort_entries(entries, count, path, opts);
 
     for (int i = 0; i < count; i++) {
@@ -41,7 +41,11 @@ void list_directory(const char *path, t_options opts) {
         if (opts.l)
             display_long(full_path, entries[i]);
         else
-            printf("%s\n", entries[i]);
+        {
+            ft_printf("%s", entries[i]);
+            if (i < count - 1)
+                ft_printf("\t");
+        }
 
         free(entries[i]);
     }

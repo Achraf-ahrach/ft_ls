@@ -6,3 +6,4 @@ ft_printf/obj/
 .a
 ft_ls
 .DS_Store
+.vscode

@@ -10,6 +10,7 @@ static int compare_time(const void *a, const void *b, const char *dir) {
 
     snprintf(path1, PATH_MAX, "%s/%s", dir, *(char **)a);
     snprintf(path2, PATH_MAX, "%s/%s", dir, *(char **)b);
+
     stat(path1, &st1);
     stat(path2, &st2);
 

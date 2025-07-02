@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <limits.h>
+#include "../ft_printf/ft_printf.h"
+#include "../libft/libft.h"
 
 typedef struct s_options {
     int l;
