@@ -1,7 +1,6 @@
 
 obj/
 libft/obj/
-libft/libft.a
 ft_printf/obj/
 *.o
 *.a
