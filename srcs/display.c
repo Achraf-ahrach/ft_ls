@@ -49,9 +49,11 @@ char *format_time(time_t mtime) {
     time_t six_months = 6 * 30 * 24 * 60 * 60;
 
     if (now - mtime > six_months || mtime > now) {
-        strftime(time_str, sizeof(time_str), "%b %d  %Y", localtime(&mtime));
+        // For old files, show: "Mon DD  YYYY" (note the two spaces before year)
+        strftime(time_str, sizeof(time_str), "%b %e  %Y", localtime(&mtime));
     } else {
-        strftime(time_str, sizeof(time_str), "%b %d %H:%M", localtime(&mtime));
+        // For recent files, show: "Mon DD HH:MM"
+        strftime(time_str, sizeof(time_str), "%b %e %H:%M", localtime(&mtime));
     }
 
     return time_str;
@@ -71,7 +73,15 @@ void display_long(t_file *file, t_ls_data *data) {
     }
     gr = getgrgid(file->st.st_gid);
 
-    display_time = data->opts.u ? file->st.st_atime : file->st.st_mtime;
+    // Choose the correct time based on options
+    if (data->opts.c) {
+        display_time = file->st.st_ctime;  // Use change time
+    } else if (data->opts.u) {
+        display_time = file->st.st_atime;  // Use access time
+    } else {
+        display_time = file->st.st_mtime;  // Use modification time (default)
+    }
+
     time_str = format_time(display_time);
 
     if (data->opts.g) {

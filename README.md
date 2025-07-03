@@ -14,23 +14,23 @@ A custom implementation of the Unix `ls` command written in C. This project recr
 
 ### Supported Options
 
-| Option | Description                                     |
-| ------ | ----------------------------------------------- |
-| `-a`   | Show hidden files (starting with `.`)           |
-| `-d`   | List directories themselves, not their contents |
-| `-f`   | Don't sort entries                              |
-| `-g`   | Like `-l`, but don't show owner                 |
-| `-G`   | Colorize output                                 |
-| `-l`   | Use long listing format                         |
-| `-n`   | Show numeric user and group IDs                 |
-| `-p`   | Add `/`after directory names                    |
-| `-r`   | Reverse sort order                              |
-| `-R`   | List subdirectories recursively                 |
-| `-t`   | Sort by modification time                       |
-| `-u`   | Sort by access time                             |
-| `-1`   | List one file per line                          |
-| `-c`   | Use ctime for sorting                           |
-| `-h`   | Display help                                    |
+| Option | Description                                        |
+| ------ | -------------------------------------------------- |
+| `-a`   | Show hidden files (starting with `.`)              |
+| `-d`   | List directories themselves, not their contents    |
+| `-f`   | Don't sort entries                                 |
+| `-g`   | Like `-l`, but don't show owner                    |
+| `-G`   | Colorize output                                    |
+| `-l`   | Use long listing format                            |
+| `-n`   | Show numeric user and group IDs                    |
+| `-p`   | Add `/`after directory names                       |
+| `-r`   | Reverse sort order                                 |
+| `-R`   | List subdirectories recursively                    |
+| `-t`   | Sort by modification time (mtime)                  |
+| `-u`   | Sort by access time                                |
+| `-1`   | List one file per line                             |
+| `-c`   | Use ctime for sorting 'Last status change' (ctime) |
+| `-h`   | Display help                                       |
 
 ### Display Modes
 

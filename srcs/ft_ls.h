@@ -44,9 +44,10 @@ typedef struct s_options {
     int n;      // numeric user and group IDs
     int a;      // show hidden files
     int r;      // reverse sort
-    int t;      // sort by time
+    int t;      // sort by time 'modification' (mtime)
     int big_r;  // recursive
-    int u;      // use access time
+    int u;      // use access time 'last access' (atime)
+    int c;      // use change time "Last status change" (ctime)
     int f;      // don't sort
     int g;      // like -l but no owner
     int d;      // list directories as files

@@ -12,10 +12,10 @@ static void print_usage(void) {
     ft_printf("  -l                     use a long listing format\n");
     ft_printf("  -r                     reverse order while sorting\n");
     ft_printf("  -R                     list subdirectories recursively\n");
-    ft_printf("  -t                     sort by modification time\n");
-    ft_printf("  -u                     sort by access time\n");
+    ft_printf("  -t                     sort by 'modification' time (mtime)\n");
+    ft_printf("  -u                     sort by 'last access' time (atime)\n");
     ft_printf("  -1                     list one file per line\n");
-    ft_printf("  -c                     use ctime instead of mtime for sorting\n");
+    ft_printf("  -c                     sort by 'Last status change' time (ctime)\n");
     ft_printf("  -n                     Display numeric user and group IDs instead of names\n");
     ft_printf("  -p                     display a slash after each directory name\n");
     ft_printf("  -h                     display this help and exit\n");
@@ -42,6 +42,7 @@ void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path
                 else if (argv[i][j] == 't') opts->t = 1;
                 else if (argv[i][j] == 'R') opts->big_r = 1;
                 else if (argv[i][j] == 'u') opts->u = 1;
+                else if (argv[i][j] == 'c') opts->c = 1;
                 else if (argv[i][j] == 'f') {
                     opts->f = 1;
                     opts->a = 1;
@@ -50,7 +51,6 @@ void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path
                 else if (argv[i][j] == 'd') opts->d = 1;
                 else if (argv[i][j] == 'G') opts->big_g = 1;
                 else if (argv[i][j] == '1') opts->one = 1;
-                else if (argv[i][j] == 'c') ;
                 else if (argv[i][j] == 'p') opts->p = 1;
                 else if (argv[i][j] == 'h') {
                     print_usage();
@@ -74,5 +74,10 @@ void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path
     if (opts->f) {
         opts->t = 0;
         opts->r = 0;
+    }
+
+    // -u and -c are mutually exclusive, -c takes precedence if both are specified
+    if (opts->c && opts->u) {
+        opts->u = 0;
     }
 }
