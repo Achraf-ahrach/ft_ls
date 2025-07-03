@@ -1,74 +1,131 @@
-# ft_ls - A Complete `ls` Command Implementation
+# ft_ls
 
-A comprehensive implementation of the Unix `ls` command with all mandatory features and extensive bonus functionality.
+A custom implementation of the Unix `ls` command written in C. This project recreates the functionality of the standard `ls` utility with support for various options and formatting modes.
 
-## Features
+## 🚀 Features
 
-### Mandatory Options
+### Core Functionality
 
-- `-l` - Long format listing with detailed file information
-- `-a` - Show all files, including hidden ones (starting with '.')
-- `-r` - Reverse the order of the sort
-- `-t` - Sort by modification time (most recent first)
-- `-R` - Recursively list subdirectories
+- **Directory listing** : List files and directories with various formatting options
+- **File information** : Display detailed file metadata including permissions, ownership, size, and timestamps
+- **Sorting** : Multiple sorting options (name, time, access time)
+- **Filtering** : Show/hide hidden files and directories
+- **Recursive listing** : Traverse directory structures recursively
 
-### Bonus Options
+### Supported Options
 
-- `-u` - Use access time instead of modification time
-- `-f` - Don't sort output
-- `-g` - Like `-l` but don't show owner information
-- `-d` - List directories themselves, not their contents
-- `-G` - Enable colorized output
-- `-1` - List one file per line
-- `--color` - Long option for colorized output
-- `--help` - Show usage information
+| Option | Description                                     |
+| ------ | ----------------------------------------------- |
+| `-a`   | Show hidden files (starting with `.`)           |
+| `-d`   | List directories themselves, not their contents |
+| `-f`   | Don't sort entries                              |
+| `-g`   | Like `-l`, but don't show owner                 |
+| `-G`   | Colorize output                                 |
+| `-l`   | Use long listing format                         |
+| `-n`   | Show numeric user and group IDs                 |
+| `-p`   | Add `/`after directory names                    |
+| `-r`   | Reverse sort order                              |
+| `-R`   | List subdirectories recursively                 |
+| `-t`   | Sort by modification time                       |
+| `-u`   | Sort by access time                             |
+| `-1`   | List one file per line                          |
+| `-c`   | Use ctime for sorting                           |
+| `-h`   | Display help                                    |
 
-### Advanced Features
+### Display Modes
 
-- **Column formatting** - Automatic column layout based on terminal width
-- **Extended attributes** - Detection and display of extended attributes (@)
-- **ACL support** - Basic ACL detection and display (+)
-- **Symbolic link handling** - Full symbolic link target display
-- **Color coding** - Comprehensive color scheme for different file types
-- **Optimized performance** - Efficient sorting and display algorithms
-- **Error handling** - Robust error handling matching system `ls`
+#### Short Format (Default)
 
-## Color Scheme
+```
+file1.txt  file2.txt  directory/
+```
 
-When using `-G` or `--color`, files are colored according to their type:
+#### Long Format (`-l`)
 
-- **Blue** - Directories
-- **Cyan** - Symbolic links
-- **Green** - Executable files
-- **Yellow** - Character/block devices
-- **Magenta** - FIFO pipes
-- **Bright Magenta** - Sockets
-- **Default** - Regular files
+```
+-rw-r--r-- 1 user group 1024 Dec 25 10:30 file1.txt
+drwxr-xr-x 2 user group 4096 Dec 25 10:25 directory
+```
 
-## Building
+#### Columnar Format
+
+Automatically adjusts to terminal width for optimal display.
+
+#### Colored Output (`-G`)
+
+- **Blue** : Directories
+- **Cyan** : Symbolic links
+- **Green** : Executable files
+- **Yellow** : Character/block devices
+- **Magenta** : Named pipes
+- **Default** : Regular files
+
+## 🛠️ Installation
 
 ### Prerequisites
 
-- GCC or Clang compiler
+- GCC compiler
 - Make
-- POSIX-compliant system (Linux, macOS, etc.)
+- Unix-like system (Linux, macOS, etc.)
 
-### Compilation
+### Building
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/yourusername/ft_ls.git
 cd ft_ls
 
 # Build the project
 make
 
-# Run tests
-make test
+# Clean build files
+make clean
 
-# Install system-wide (optional)
-make install
+# Full clean (removes executable)
+make fclean
+
+# Rebuild
+make re
 ```
+
+## 📖 Usage
+
+### Basic Usage
+
+```bash
+# List current directory
+./ft_ls
+
+# List specific directory
+./ft_ls /path/to/directory
+
+# List multiple paths
+./ft_ls file1.txt directory1/ directory2/
+```
+
+### Common Examples
+
+```bash
+# Long format with hidden files
+./ft_ls -la
+
+# Recursive listing with colors
+./ft_ls -RG
+
+# Sort by modification time (newest first)
+./ft_ls -lt
+
+# Reverse alphabetical order
+./ft_ls -r
+
+# Show only directories
+./ft_ls -d */
+
+# Numeric user/group IDs
+./ft_ls -ln
+```
+
+## 🏗️ Architecture
 
 ### Project Structure
 
@@ -76,186 +133,148 @@ make install
 ft_ls/
 ├── Makefile
 ├── README.md
-├── srcs/
-│   ├── ft_ls.c         # Main function
-│   ├── ft_ls.h         # Header file
-│   ├── parse_args.c    # Argument parsing
-│   ├── list_dir.c      # Directory listing
-│   ├── display.c       # Display functions
-│   ├── sort.c          # Sorting algorithms
-│   ├── utils.c         # Utility functions
-│   └── process.c       # Path processing
+├── ft_printf/          # Custom printf implementation
 ├── libft/              # Custom C library
-└── ft_printf/          # Custom printf implementation
+├── pdfs/               # Project documentation
+└── srcs/               # Source code
+    ├── display.c       # Output formatting functions
+    ├── ft_ls.c         # Main program entry
+    ├── ft_ls.h         # Header file with structures and prototypes
+    ├── list_dir.c      # Directory listing logic
+    ├── parse_args.c    # Command-line argument parsing
+    ├── process.c       # File processing functions
+    ├── sort.c          # Sorting algorithms
+    └── utils.c         # Utility functions
 ```
 
-## Usage Examples
+### Key Data Structures
 
-```bash
-# Basic listing
-./ft_ls
+#### `t_options`
 
-# Long format with hidden files
-./ft_ls -la
+Stores command-line options and flags.
 
-# Recursive listing with colors
-./ft_ls -RG
+#### `t_file`
 
-# Sort by time, newest first
-./ft_ls -lt
+Represents a single file entry with metadata:
 
-# Sort by time, oldest first
-./ft_ls -ltr
+- Name and full path
+- `stat` structure information
+- Symbolic link target
+- Extended attributes and ACL flags
 
-# List directories as files
-./ft_ls -ld /usr /var /tmp
+#### `t_ls_data`
 
-# Show access times
-./ft_ls -lu
+Main data container for file listings:
 
-# No sorting (fastest for large directories)
-./ft_ls -f
+- Array of files
+- Display options
+- Terminal width
+- Column width calculations
 
-# Group information without owner
-./ft_ls -g
-```
+### Core Functions
 
-## Technical Details
+- **`parse_args()`** : Command-line argument processing
+- **`list_directory()`** : Directory traversal and file collection
+- **`sort_files()`** : File sorting with multiple criteria
+- **`display_long()`** : Long format output
+- **`display_columns()`** : Columnar format output
+- **`format_permissions()`** : Permission string formatting
+
+## 🔧 Technical Details
 
 ### Memory Management
 
-- Dynamic memory allocation for file lists
-- Proper cleanup of all allocated resources
-- No memory leaks under normal operation
+- Dynamic memory allocation for file arrays
+- Proper cleanup of allocated resources
+- Error handling for allocation failures
 
-### Performance Optimizations
+### Platform Compatibility
 
-- Efficient sorting algorithms (quicksort for most cases)
+- Uses POSIX-compliant system calls
+- Handles different filesystem types
+- Terminal width detection for optimal display
+
+### Performance Considerations
+
+- Efficient sorting algorithms
 - Minimal system calls per file
-- Optimized column calculation for terminal output
-- Cached user/group name lookups
+- Optimized string operations
 
-### Error Handling
+## 🧪 Testing
 
-- Comprehensive error checking for all system calls
-- Graceful handling of permission denied errors
-- Proper error messages matching system `ls`
-- Continue processing on individual file errors
-
-### Standards Compliance
-
-- POSIX-compliant system calls
-- Compatible with GNU coreutils `ls` behavior
-- Handles special files (devices, pipes, sockets)
-- Proper handling of symbolic links
-
-## Implementation Details
-
-### File Information Structure
-
-```c
-typedef struct s_file {
-    char *name;           // File name
-    char *full_path;      // Full path to file
-    struct stat st;       // File statistics
-    char *link_target;    // Symbolic link target
-    int has_xattr;        // Has extended attributes
-    int has_acl;          // Has ACL
-} t_file;
-```
-
-### Sorting Algorithm
-
-The implementation uses quicksort for efficiency with custom comparison functions:
-
-- Alphabetical sorting (default)
-- Time-based sorting (modification or access time)
-- Reverse sorting capability
-- Stable sort for equal elements
-
-### Column Layout Algorithm
-
-For multi-column output:
-
-1. Calculate maximum filename length
-2. Determine optimal column count based on terminal width
-3. Arrange files in column-major order
-4. Apply proper spacing and alignment
-
-## Testing
-
-The project includes comprehensive tests covering:
-
-- All mandatory options
-- All bonus options
-- Edge cases (empty directories, special files)
-- Error conditions
-- Large directory performance
-
-Run tests with:
+### Test Cases
 
 ```bash
-make test
+# Test basic functionality
+./ft_ls
+./ft_ls -l
+./ft_ls -la
+
+# Test with different paths
+./ft_ls /usr/bin
+./ft_ls /etc /var /tmp
+
+# Test sorting options
+./ft_ls -t
+./ft_ls -rt
+./ft_ls -u
+
+# Test recursive listing
+./ft_ls -R /small/directory
 ```
 
-## Bonus Features Implemented
+### Comparison with System `ls`
 
-### 1. Extended Attributes & ACL
+```bash
+# Compare outputs
+ls -la > system_output.txt
+./ft_ls -la > ft_ls_output.txt
+diff system_output.txt ft_ls_output.txt
+```
 
-- Detection of extended attributes using `listxattr()`
-- Display of `@` symbol for files with extended attributes
-- Foundation for ACL support (+ symbol)
+## 📊 Features Comparison
 
-### 2. Column Management
+| Feature                  | ft_ls | System ls |
+| ------------------------ | ----- | --------- |
+| Basic listing            | ✅    | ✅        |
+| Long format              | ✅    | ✅        |
+| Hidden files             | ✅    | ✅        |
+| Sorting options          | ✅    | ✅        |
+| Recursive listing        | ✅    | ✅        |
+| Colored output           | ✅    | ✅        |
+| Numeric IDs              | ✅    | ✅        |
+| Extended attributes      | ✅    | ✅        |
+| Terminal width detection | ✅    | ✅        |
 
-- Automatic terminal width detection
-- Dynamic column calculation
-- Optimal spacing for readability
+## 🚧 Known Limitations
 
-### 3. Additional Options
+- ACL detection not fully implemented
+- Some advanced `ls` options not supported
+- Color scheme is simplified compared to GNU ls
 
-- `-u` flag for access time sorting
-- `-f` flag for unsorted output (performance)
-- `-g` flag for group-only long format
-- `-d` flag for directory-as-file listing
+## 🤝 Contributing
 
-### 4. Color Support
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- Comprehensive color scheme
-- File type-based coloring
-- Terminal capability detection
+## 📝 License
 
-### 5. Performance Optimizations
+This project is part of the 42 School curriculum and is intended for educational purposes.
 
-- Efficient memory usage
-- Minimal system calls
-- Optimized for large directories
+## 🙏 Acknowledgments
 
-## Compatibility
+- 42 School for the project specifications
+- The GNU coreutils team for the original `ls` implementation reference
+- POSIX standards for system call specifications
 
-This implementation is compatible with:
+## 📞 Contact
 
-- Linux (Ubuntu, CentOS, Debian, etc.)
-- macOS
-- FreeBSD
-- Other POSIX-compliant Unix systems
+- GitHub: [@yourusername](https://github.com/yourusername)
+- Email: your.email@example.com
 
-## Known Limitations
+---
 
-- ACL detection is basic (full ACL support requires additional libraries)
-- Some advanced GNU `ls` options are not implemented
-- Time zone handling may differ slightly from system `ls`
-
-## Contributing
-
-This project was developed as part of the 42 School curriculum. The implementation focuses on:
-
-- Clean, readable code
-- Proper error handling
-- Memory management
-- Performance optimization
-- Standards compliance
-
-## License
-
-This project is part of the 42 School curriculum and is provided for educational purposes.
+_This project demonstrates proficiency in C programming, system calls, file system operations, and Unix command-line utilities._
