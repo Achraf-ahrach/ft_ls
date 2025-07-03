@@ -104,14 +104,17 @@ void display_long(t_file *file, t_ls_data *data) {
 
     if (data->opts.big_g) {
         print_colored_name(file->name, file->st.st_mode);
-    } else {
+    }
+    else {
         printf("%s", file->name);
     }
 
     if (file->link_target) {
         printf(" -> %s", file->link_target);
     }
-
+    if (data->opts.p && S_ISDIR(file->st.st_mode)) {
+        printf("/");
+    }
     printf("\n");
 }
 
@@ -119,8 +122,12 @@ void display_short(t_ls_data *data) {
     for (int i = 0; i < data->count; i++) {
         if (data->opts.big_g) {
             print_colored_name(data->files[i].name, data->files[i].st.st_mode);
-        } else {
+        }
+        else {
             printf("%s", data->files[i].name);
+        }
+        if (data->opts.p && S_ISDIR(data->files[i].st.st_mode)) {
+            printf("/");
         }
         printf("\n");
     }
@@ -152,6 +159,9 @@ void display_columns(t_ls_data *data) {
                 print_colored_name(data->files[idx].name, data->files[idx].st.st_mode);
             } else {
                 printf("%s", data->files[idx].name);
+            }
+            if (data->opts.p && S_ISDIR(data->files[idx].st.st_mode)) {
+                printf("/");
             }
 
             if (col < cols - 1 && idx + rows < data->count) {

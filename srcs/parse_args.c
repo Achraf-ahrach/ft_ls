@@ -17,6 +17,8 @@ static void print_usage(void) {
     ft_printf("  -1                     list one file per line\n");
     ft_printf("  -c                     use ctime instead of mtime for sorting\n");
     ft_printf("  -n                     Display numeric user and group IDs instead of names\n");
+    ft_printf("  -p                     display a slash after each directory name\n");
+    ft_printf("  -h                     display this help and exit\n");
 }
 
 void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path_count) {
@@ -49,6 +51,11 @@ void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path
                 else if (argv[i][j] == 'G') opts->big_g = 1;
                 else if (argv[i][j] == '1') opts->one = 1;
                 else if (argv[i][j] == 'c') ;
+                else if (argv[i][j] == 'p') opts->p = 1;
+                else if (argv[i][j] == 'h') {
+                    print_usage();
+                    exit(0);
+                }
                 else {
                     ft_printf("ft_ls: invalid option -- %c\n", argv[i][j]);
                     print_usage();

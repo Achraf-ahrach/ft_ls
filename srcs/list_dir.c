@@ -92,31 +92,6 @@ void list_directory(const char *path, t_options opts, int show_path) {
     DIR *dir;
     struct dirent *entry;
     t_ls_data data;
-    struct stat st;
-
-    // Handle -d option
-    if (opts.d) {
-        if (lstat(path, &st) == -1) {
-            perror(path);
-            return;
-        }
-        init_ls_data(&data, opts);
-        add_file(&data, path, ".");
-        
-        if (opts.l || opts.g) {
-            calculate_widths(&data);
-            if (opts.l || opts.g)
-                print_total_blocks(data.total_blocks);
-            for (int i = 0; i < data.count; i++) {
-                display_long(&data.files[i], &data);
-            }
-        } else {
-            print_colored_name(path, st.st_mode);
-            ft_printf("\n");
-        }
-        free_ls_data(&data);
-        return;
-    }
 
     dir = opendir(path);
     if (!dir) {
@@ -149,7 +124,8 @@ void list_directory(const char *path, t_options opts, int show_path) {
         }
     } else if (opts.one || isatty(STDOUT_FILENO) == 0) {
         display_short(&data);
-    } else {
+    }
+    else {
         display_columns(&data);
     }
 

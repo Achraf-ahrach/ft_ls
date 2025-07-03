@@ -1,12 +1,5 @@
 #include "ft_ls.h"
 
-// static int is_directory(const char *path) {
-//     struct stat st;
-//     if (stat(path, &st) == -1)
-//         return 0;
-//     return S_ISDIR(st.st_mode);
-// }
-
 static int compare_paths(const void *a, const void *b) {
     return strcmp(*(char **)a, *(char **)b);
 }
@@ -75,8 +68,11 @@ void process_paths(char **paths, int path_count, t_options opts) {
             for (i = 0; i < data.count; i++) {
                 if (opts.big_g) {
                     print_colored_name(data.files[i].name, data.files[i].st.st_mode);
-                } else {
+                } else {    
                     ft_printf("%s", data.files[i].name);
+                }
+                if (opts.p && S_ISDIR(data.files[i].st.st_mode)) {
+                    ft_printf("/");
                 }
                 if (i < data.count - 1 || dir_count > 0)
                 ft_printf("  ");

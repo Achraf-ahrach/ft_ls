@@ -52,6 +52,7 @@ typedef struct s_options {
     int d;      // list directories as files
     int big_g;  // enable colorization
     int one;    // one file per line
+    int p;      // display a slash after each directory name
 } t_options;
 
 typedef struct s_file {
