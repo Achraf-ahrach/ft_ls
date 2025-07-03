@@ -272,8 +272,7 @@ This project is part of the 42 School curriculum and is intended for educational
 
 ## 📞 Contact
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- Email: achrafahrach44@example.com
 
 ---
 
