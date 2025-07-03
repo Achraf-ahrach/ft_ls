@@ -141,7 +141,7 @@ void list_directory(const char *path, t_options opts, int show_path) {
         sort_files(&data);
     }
 
-    if (opts.l || opts.g) {
+    if (opts.l || opts.g || opts.n) {
         calculate_widths(&data);
         print_total_blocks(data.total_blocks);
         for (int i = 0; i < data.count; i++) {

@@ -62,7 +62,11 @@ void process_paths(char **paths, int path_count, t_options opts) {
         if (!opts.f) {
             sort_files(&data);
         }
-        if (opts.l || opts.g) {
+        if (opts.one) {
+            display_short(&data);
+            return free_ls_data(&data);
+        }
+        if (opts.l || opts.g || opts.n) {
             calculate_widths(&data);
             for (i = 0; i < data.count; i++) {
                 display_long(&data.files[i], &data);

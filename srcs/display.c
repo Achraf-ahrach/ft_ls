@@ -82,7 +82,17 @@ void display_long(t_file *file, t_ls_data *data) {
                data->max_group, gr ? gr->gr_name : "unknown",
                data->max_size, (long long)file->st.st_size,
                time_str);
-    } else {
+    } else if (data->opts.n) {
+        // -n option: numeric user and group IDs
+        printf("%s %*hu %*d %*d %*lld %s ",
+               perms,
+               data->max_links, (unsigned short)file->st.st_nlink,
+               data->max_user, file->st.st_uid,
+               data->max_group, file->st.st_gid,
+               data->max_size, (long long)file->st.st_size,
+               time_str);
+    }
+    else {
         printf("%s %*hu %-*s %-*s %*lld %s ",
                perms,
                data->max_links, (unsigned short)file->st.st_nlink,

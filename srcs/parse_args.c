@@ -15,6 +15,8 @@ static void print_usage(void) {
     ft_printf("  -t                     sort by modification time\n");
     ft_printf("  -u                     sort by access time\n");
     ft_printf("  -1                     list one file per line\n");
+    ft_printf("  -c                     use ctime instead of mtime for sorting\n");
+    ft_printf("  -n                     Display numeric user and group IDs instead of names\n");
 }
 
 void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path_count) {
@@ -32,6 +34,7 @@ void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path
             j = 1;
             while (argv[i][j]) {
                 if (argv[i][j] == 'l') opts->l = 1;
+                else if (argv[i][j] == 'n') opts->n = 1;
                 else if (argv[i][j] == 'a') opts->a = 1;
                 else if (argv[i][j] == 'r') opts->r = 1;
                 else if (argv[i][j] == 't') opts->t = 1;
@@ -43,8 +46,9 @@ void parse_args(int argc, char **argv, t_options *opts, char ***paths, int *path
                     }
                 else if (argv[i][j] == 'g') opts->g = 1;
                 else if (argv[i][j] == 'd') opts->d = 1;
-                else if (argv[i][j] == 'G' || argv[i][j] == 'c') opts->big_g = 1; // -G or --color
+                else if (argv[i][j] == 'G') opts->big_g = 1;
                 else if (argv[i][j] == '1') opts->one = 1;
+                else if (argv[i][j] == 'c') ;
                 else {
                     ft_printf("ft_ls: invalid option -- %c\n", argv[i][j]);
                     print_usage();

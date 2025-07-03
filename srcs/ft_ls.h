@@ -41,6 +41,7 @@
 
 typedef struct s_options {
     int l;      // long format
+    int n;      // numeric user and group IDs
     int a;      // show hidden files
     int r;      // reverse sort
     int t;      // sort by time
