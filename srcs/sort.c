@@ -1,42 +1,60 @@
 #include "ft_ls.h"
 
-static int compare_alpha(const void *a, const void *b) {
-    return strcmp(*(char **)a, *(char **)b);
+static int compare_name(const void *a, const void *b) {
+    t_file *fa = (t_file *)a;
+    t_file *fb = (t_file *)b;
+    return strcoll(fa->name, fb->name);
 }
 
-static int compare_time(const void *a, const void *b, const char *dir) {
-    struct stat st1, st2;
-    char path1[PATH_MAX], path2[PATH_MAX];
-
-    snprintf(path1, PATH_MAX, "%s/%s", dir, *(char **)a);
-    snprintf(path2, PATH_MAX, "%s/%s", dir, *(char **)b);
-
-    stat(path1, &st1);
-    stat(path2, &st2);
-
-    return (int)(st2.st_mtime - st1.st_mtime);
+static int compare_time(const void *a, const void *b) {
+    t_file *fa = (t_file *)a;
+    t_file *fb = (t_file *)b;
+    
+    time_t time_a = fa->st.st_mtime;
+    time_t time_b = fb->st.st_mtime;
+    
+    if (time_a == time_b)
+        return strcoll(fa->name, fb->name);
+    
+    return (time_b > time_a) ? 1 : -1;
 }
 
-void sort_entries(char **entries, int count, const char *dir, t_options opts) {
-    if (opts.t) {
-        for (int i = 0; i < count - 1; i++) {
-            for (int j = 0; j < count - i - 1; j++) {
-                if (compare_time(&entries[j], &entries[j + 1], dir) > 0) {
-                    char *tmp = entries[j];
-                    entries[j] = entries[j + 1];
-                    entries[j + 1] = tmp;
-                }
-            }
+static int compare_access_time(const void *a, const void *b) {
+    t_file *fa = (t_file *)a;
+    t_file *fb = (t_file *)b;
+    
+    time_t time_a = fa->st.st_atime;
+    time_t time_b = fb->st.st_atime;
+    
+    if (time_a == time_b)
+        return strcoll(fa->name, fb->name);
+    
+    return (time_b > time_a) ? 1 : -1;
+}
+
+static void reverse_array(t_file *files, int count) {
+    for (int i = 0; i < count / 2; i++) {
+        t_file tmp = files[i];
+        files[i] = files[count - i - 1];
+        files[count - i - 1] = tmp;
+    }
+}
+
+void sort_files(t_ls_data *data) {
+    if (data->count <= 1 || data->opts.f)
+    return;
+    
+    if (data->opts.t) {
+        if (data->opts.u) {
+            qsort(data->files, data->count, sizeof(t_file), compare_access_time);
+        } else {
+            qsort(data->files, data->count, sizeof(t_file), compare_time);
         }
     } else {
-        qsort(entries, count, sizeof(char *), compare_alpha);
+        qsort(data->files, data->count, sizeof(t_file), compare_name);
     }
-
-    if (opts.r) {
-        for (int i = 0; i < count / 2; i++) {
-            char *tmp = entries[i];
-            entries[i] = entries[count - i - 1];
-            entries[count - i - 1] = tmp;
-        }
+    
+    if (data->opts.r) {
+        reverse_array(data->files, data->count);
     }
 }

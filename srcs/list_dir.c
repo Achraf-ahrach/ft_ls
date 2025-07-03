@@ -1,69 +1,169 @@
 #include "ft_ls.h"
 
-static int should_display(const char *name, t_options opts) {
-    return opts.a || name[0] != '.';
+int should_display(const char *name, t_options opts) {
+    if (opts.a)
+        return 1;
+    return name[0] != '.';
 }
 
-void list_directory(const char *path, t_options opts) {
-    DIR *dir = opendir(path);
-    struct dirent *entry;
-    struct stat st;
-    char **entries = NULL;
-    int count = 0;
+void init_ls_data(t_ls_data *data, t_options opts) {
+    data->files = NULL;
+    data->count = 0;
+    data->capacity = 0;
+    data->opts = opts;
+    data->term_width = get_terminal_width();
+    data->max_links = 0;
+    data->max_user = 0;
+    data->max_group = 0;
+    data->max_size = 0;
+    data->total_blocks = 0;
+}
 
+void add_file(t_ls_data *data, const char *name, const char *dir_path) {
+    if (data->count >= data->capacity) {
+        data->capacity = data->capacity ? data->capacity * 2 : 10;
+        data->files = realloc(data->files, sizeof(t_file) * data->capacity);
+        if (!data->files) {
+            perror("realloc");
+            exit(1);
+        }
+    }
+
+    t_file *file = &data->files[data->count];
+    file->name = ft_strdup(name);
+    
+    if (dir_path && strcmp(dir_path, ".") != 0) {
+        file->full_path = malloc(ft_strlen(dir_path) + ft_strlen(name) + 2);
+        sprintf(file->full_path, "%s/%s", dir_path, name);
+    } else {
+        file->full_path = ft_strdup(name);
+    }
+
+    if (lstat(file->full_path, &file->st) == -1) {
+        perror(file->name);
+        free(file->name);
+        free(file->full_path);
+        return;
+    }
+
+    file->link_target = NULL;
+    if (S_ISLNK(file->st.st_mode)) {
+        file->link_target = malloc(PATH_MAX);
+        ssize_t len = readlink(file->full_path, file->link_target, PATH_MAX - 1);
+        if (len != -1) {
+            file->link_target[len] = '\0';
+        } else {
+            free(file->link_target);
+            file->link_target = NULL;
+        }
+    }
+
+    handle_xattr_acl(file->full_path, file);
+    data->total_blocks += file->st.st_blocks;
+    data->count++;
+}
+
+void handle_xattr_acl(const char *path, t_file *file) {
+    file->has_xattr = 0;
+    file->has_acl = 0;
+
+    // Check for extended attributes
+    ssize_t size = listxattr(path, NULL, 0, XATTR_NOFOLLOW);
+    if (size > 0) {
+        file->has_xattr = 1;
+    }
+
+    // Note: ACL checking would require additional libraries
+    // For this implementation, we'll skip ACL detection
+}
+
+void free_ls_data(t_ls_data *data) {
+    for (int i = 0; i < data->count; i++) {
+        free(data->files[i].name);
+        free(data->files[i].full_path);
+        if (data->files[i].link_target)
+            free(data->files[i].link_target);
+    }
+    if (data->files)
+        free(data->files);
+}
+
+void list_directory(const char *path, t_options opts, int show_path) {
+    DIR *dir;
+    struct dirent *entry;
+    t_ls_data data;
+    struct stat st;
+
+    // Handle -d option
+    if (opts.d) {
+        if (lstat(path, &st) == -1) {
+            perror(path);
+            return;
+        }
+        init_ls_data(&data, opts);
+        add_file(&data, path, ".");
+        
+        if (opts.l || opts.g) {
+            calculate_widths(&data);
+            if (opts.l || opts.g)
+                print_total_blocks(data.total_blocks);
+            for (int i = 0; i < data.count; i++) {
+                display_long(&data.files[i], &data);
+            }
+        } else {
+            print_colored_name(path, st.st_mode);
+            ft_printf("\n");
+        }
+        free_ls_data(&data);
+        return;
+    }
+
+    dir = opendir(path);
     if (!dir) {
         perror(path);
         return;
     }
 
-    while ((entry = readdir(dir))) {
-        if (should_display(entry->d_name, opts))
-            count++;
+    if (show_path) {
+        ft_printf("%s:\n", path);
     }
-    closedir(dir);
 
-    entries = malloc(sizeof(char *) * count);
-    if (!entries) return;
+    init_ls_data(&data, opts);
 
-    dir = opendir(path);
-    count = 0;
     while ((entry = readdir(dir))) {
-        if (should_display(entry->d_name, opts))
-            entries[count++] = ft_strdup(entry->d_name);
-    }
-    closedir(dir);
-    
-    sort_entries(entries, count, path, opts);
-
-    for (int i = 0; i < count; i++) {
-        char full_path[PATH_MAX];
-        snprintf(full_path, sizeof(full_path), "%s/%s", path, entries[i]);
-        if (opts.l)
-            display_long(full_path, entries[i]);
-        else
-        {
-            ft_printf("%s", entries[i]);
-            if (i < count - 1)
-                ft_printf("\t");
+        if (should_display(entry->d_name, opts)) {
+            add_file(&data, entry->d_name, path);
         }
-
-        free(entries[i]);
     }
-    free(entries);
+    closedir(dir);
 
+    if (!opts.f) {
+        sort_files(&data);
+    }
+
+    if (opts.l || opts.g) {
+        calculate_widths(&data);
+        print_total_blocks(data.total_blocks);
+        for (int i = 0; i < data.count; i++) {
+            display_long(&data.files[i], &data);
+        }
+    } else if (opts.one || isatty(STDOUT_FILENO) == 0) {
+        display_short(&data);
+    } else {
+        display_columns(&data);
+    }
+
+    // Handle recursive option
     if (opts.big_r) {
-        dir = opendir(path);
-        while ((entry = readdir(dir))) {
-            if (should_display(entry->d_name, opts)) {
-                char full_path[PATH_MAX];
-                snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
-                if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode)
-                    && strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-                    printf("\n%s:\n", full_path);
-                    list_directory(full_path, opts);
-                }
+        for (int i = 0; i < data.count; i++) {
+            if (S_ISDIR(data.files[i].st.st_mode) && 
+                strcmp(data.files[i].name, ".") != 0 && 
+                strcmp(data.files[i].name, "..") != 0) {
+                ft_printf("\n");
+                list_directory(data.files[i].full_path, opts, 1);
             }
         }
-        closedir(dir);
     }
+
+    free_ls_data(&data);
 }

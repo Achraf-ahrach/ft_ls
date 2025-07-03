@@ -4,6 +4,7 @@ int main(int argc, char **argv) {
     t_options opts = {0};
     char **paths = NULL;
     int path_count = 0;
+    setlocale(LC_COLLATE, "");
 
     parse_args(argc, argv, &opts, &paths, &path_count);
 
