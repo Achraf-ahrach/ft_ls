@@ -112,10 +112,10 @@ void display_long(t_file *file, t_ls_data *data) {
                time_str);
     }
 
+    // Print filename with color if -G is specified
     if (data->opts.big_g) {
         print_colored_name(file->name, file->st.st_mode);
-    }
-    else {
+    } else {
         printf("%s", file->name);
     }
 

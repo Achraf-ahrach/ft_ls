@@ -55,16 +55,19 @@ void process_paths(char **paths, int path_count, t_options opts) {
         if (!opts.f) {
             sort_files(&data);
         }
-        if (opts.one) {
-            display_short(&data);
-            return free_ls_data(&data);
-        }
+        
         if (opts.l || opts.g || opts.n) {
             calculate_widths(&data);
+            if (data.count > 0) {
+                print_total_blocks(data.total_blocks);
+            }
             for (i = 0; i < data.count; i++) {
                 display_long(&data.files[i], &data);
             }
+        } else if (opts.one) {
+            display_short(&data);
         } else {
+            // Handle simple file listing (like when using -d)
             for (i = 0; i < data.count; i++) {
                 if (opts.big_g) {
                     print_colored_name(data.files[i].name, data.files[i].st.st_mode);
@@ -74,11 +77,12 @@ void process_paths(char **paths, int path_count, t_options opts) {
                 if (opts.p && S_ISDIR(data.files[i].st.st_mode)) {
                     ft_printf("/");
                 }
-                if (i < data.count - 1 || dir_count > 0)
-                ft_printf("  ");
+                if (i < data.count - 1) {
+                    ft_printf("  ");
+                } else {
+                    ft_printf("\n");  // Add newline after the last file
+                }
             }
-            if (file_count > 0 && dir_count > 0)
-            ft_printf("\n");
         }
         
         free_ls_data(&data);

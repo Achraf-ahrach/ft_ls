@@ -14,7 +14,7 @@
 
 void	ft_unsigned(unsigned int nb, int *con)
 {
-	if (nb >= 0 && nb <= 9)
+	if (nb <= 9)
 	{
 		ft_putchar((nb + 48), con);
 	}
