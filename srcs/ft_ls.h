@@ -1,6 +1,10 @@
 #ifndef FT_LS_H
 #define FT_LS_H
 
+#ifdef __linux__
+#include <sys/xattr.h>
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <dirent.h>

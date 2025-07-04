@@ -68,6 +68,7 @@ void handle_xattr_acl(const char *path, t_file *file) {
     file->has_acl = 0;
 
     // Check for extended attributes
+    // ssize_t size = llistxattr(path, NULL, 0); // This is the Linux-specific function
     ssize_t size = listxattr(path, NULL, 0, XATTR_NOFOLLOW);
     if (size > 0) {
         file->has_xattr = 1;
